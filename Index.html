@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynita — Discovery Intelligence Network Action</title>
+<link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@500;600&family=Instrument+Sans:wght@400;500;600&family=Source+Code+Pro:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0610;--card:#140E1B;--card2:#1B1424;--card3:#261C31;--hi:#32253F;--line:#2E2238;
+  --tx:#fff;--mut:#CDBFD6;--out:#8F8199;--cy:#FF5C8A;--bl:#E8346F;--vi:#FFC48A;--vibg:#2B1810;
+  --ok:#86EFAC;--okbg:#0B2E1B;--wa:#FCD34D;--wabg:#33220A;--er:#F87171;--erbg:#450A0A;
+  --dawn:linear-gradient(135deg,#FF4D8D,#FF9A3C);
+  --r:8px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(900px 500px at 85% -10%,rgba(255,92,138,.16),transparent 60%),radial-gradient(600px 400px at 0% 100%,rgba(255,154,60,.10),transparent 60%),var(--bg);background-attachment:fixed;color:var(--tx);font:400 14px/22px "Instrument Sans",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:"Wix Madefor Display",system-ui,sans-serif;font-weight:600}
+h1{font-size:32px;line-height:40px;letter-spacing:-.25px}
+h2{font-size:24px;line-height:32px;letter-spacing:-.15px}
+h3{font-size:18px;line-height:26px}
+.mono{font-family:"Source Code Pro",monospace;font-size:12px;font-weight:500;color:var(--cy)}
+h1{background:linear-gradient(90deg,#fff 45%,#FFC48A);-webkit-background-clip:text;background-clip:text;color:transparent}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+/* layout */
+#side{position:fixed;inset:0 auto 0 0;width:240px;background:var(--card);border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;gap:8px;z-index:20;transition:transform 220ms cubic-bezier(.2,0,0,1)}
+.logo{font:600 24px "Wix Madefor Display";letter-spacing:3px;padding:0 8px 4px;background:var(--dawn);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo small{-webkit-text-fill-color:var(--out);display:block;font:400 11px "Instrument Sans";letter-spacing:.3px;color:var(--out)}
+.nav{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);color:var(--mut);transition:all 120ms ease-out;font-weight:500}
+.nav:hover{background:var(--card3);color:var(--tx)}
+.nav.on{background:linear-gradient(90deg,rgba(255,92,138,.22),rgba(255,92,138,.04));color:var(--cy);box-shadow:inset 3px 0 0 var(--cy)}
+#top{display:none;position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px;align-items:center;gap:12px}
+main{margin-left:240px;padding:32px}
+.wrap{max-width:1200px;margin:0 auto}
+@media(max-width:1023px){
+  #side{transform:translateX(-100%)}#side.open{transform:none}
+  #top{display:flex}main{margin-left:0;padding:20px 16px}
+}
+/* components */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rl);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.ci{display:block;transition:all 120ms ease-out;cursor:pointer}
+.ci:hover{border-color:var(--cy);background:var(--card2);box-shadow:0 0 0 1px rgba(255,92,138,.35),0 8px 30px rgba(255,92,138,.12);transform:translateY(-2px)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--dawn);color:#fff;box-shadow:0 4px 18px rgba(255,92,138,.28);border:0;border-radius:var(--r);padding:8px 16px;font-weight:500;cursor:pointer;transition:all 120ms ease-out}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.ghost{background:transparent;box-shadow:none;border:1px solid var(--line);color:var(--mut)}
+.btn.ghost:hover{border-color:var(--cy);color:var(--cy);background:transparent;filter:none}
+.btn.ai{box-shadow:none;background:var(--vibg);color:var(--vi);border:1px solid var(--vi)}
+.btn.ai:hover{background:var(--vi);color:var(--bg);filter:none}
+.chip{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--card2);color:var(--mut);border-radius:9999px;padding:2px 12px;font-size:12px;font-weight:500;cursor:default}
+.tag-ok{background:var(--okbg);color:var(--ok);border-color:transparent}
+.tag-wa{background:var(--wabg);color:var(--wa);border-color:transparent}
+.tag-vi{background:var(--vibg);color:var(--vi);border-color:transparent}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:24px 0 16px;overflow-x:auto}
+.tab{background:0;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:8px 16px;cursor:pointer;font-weight:500;white-space:nowrap;transition:all 120ms ease-out}
+.tab:hover{color:var(--tx)}.tab.on{color:var(--cy);border-color:var(--cy)}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:8px 12px;transition:border-color 120ms ease-out}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--cy)}
+label{display:block;font-size:12px;font-weight:500;color:var(--mut);margin:12px 0 4px;letter-spacing:.2px}
+textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.mut{color:var(--mut)}.sm{font-size:13px}
+.stack>*+*{margin-top:16px}
+.stat{font:600 36px "Wix Madefor Display";background:var(--dawn);-webkit-background-clip:text;background-clip:text;color:transparent}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.ai-box{background:var(--vibg);border:1px solid var(--vi);border-radius:var(--rl);padding:24px;white-space:pre-wrap}
+.avatar{width:40px;height:40px;border-radius:9999px;display:grid;place-items:center;font:600 14px "Wix Madefor Display";background:var(--dawn);color:#fff;flex:none}
+.avatar.sm{width:28px;height:28px;font-size:11px}
+.role{display:inline-flex;border-radius:9999px;padding:2px 10px;font-size:11px;font-weight:600;background:var(--vibg);color:var(--vi);letter-spacing:.3px}
+.tag-n{background:var(--card3);color:var(--mut);border-color:transparent}
+.btn.danger{background:transparent;box-shadow:none;border:1px solid var(--er);color:var(--er)}
+.btn.danger:hover{background:var(--er);color:var(--bg);filter:none}
+select.inline{width:auto;padding:4px 10px;font-size:12px}
+/* brand */
+.brand{display:flex;align-items:center;gap:10px}
+.brand .mark{width:38px;height:38px;flex:none;filter:drop-shadow(0 4px 14px rgba(255,92,138,.45))}
+.brand.big{padding:0 4px}.brand.big .mark{width:44px;height:44px}
+.brand .logo{padding:0}
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:var(--rl);padding:32px;margin-bottom:24px;border:1px solid var(--line);
+  background:radial-gradient(500px 220px at 100% 0%,rgba(255,154,60,.22),transparent 70%),radial-gradient(500px 260px at 0% 100%,rgba(255,77,141,.22),transparent 70%),var(--card)}
+.hero h2{font-size:30px;line-height:38px;background:var(--dawn);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:620px;margin-top:8px;color:var(--mut)}
+/* auth, header, pages */
+#top{display:flex;gap:12px;padding:10px 24px}
+body:not(.auth) main{margin-left:0}
+body:not(.auth) #side,body:not(.auth) #burger{display:none}
+@media(min-width:1024px){body.auth #burger,body.auth #top .brand{display:none}body.auth #top{padding-left:264px}}
+.who{display:flex;align-items:center;gap:8px;font-weight:500}
+@media(max-width:700px){.hid{display:none}}
+.mini{padding:12px 16px}.mini+.mini{margin-top:8px}
+.flash{background:var(--vibg);border:1px solid var(--vi);color:var(--vi);border-radius:var(--r);padding:10px 14px;margin-bottom:16px}
+.pipe{display:flex;justify-content:space-between;position:relative;margin:8px 0 40px;padding:0 4px}
+.pipe:before{content:"";position:absolute;left:5%;right:5%;top:9px;height:2px;background:var(--dawn);opacity:.5}
+.pipe div{position:relative;text-align:center;font-size:12px;color:var(--mut)}
+.pipe i{display:block;width:18px;height:18px;margin:0 auto 6px;border-radius:50%;background:var(--dawn);box-shadow:0 0 16px rgba(255,92,138,.6)}
+.auth-box{max-width:440px;margin:40px auto}
+details{margin-top:8px}summary{cursor:pointer;color:var(--cy);font-weight:500}
+.kan{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.kan{grid-template-columns:1fr}}
+.kan>div{background:var(--card2);border-radius:var(--rl);padding:12px;min-height:80px}
+.kan .card{padding:14px;margin-top:10px}
+.cm{margin-top:12px}.cm .rep{margin:10px 0 0 24px;padding-left:12px;border-left:2px solid var(--line)}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);font-size:13px}
+.rep-txt h3{margin:16px 0 4px;font-size:16px;color:var(--vi)}.rep-txt li{margin-left:18px}
+select[multiple]{min-height:90px}
+</style>
+</head>
+<body>
+<header id="top">
+  <button class="btn ghost" id="burger" aria-label="Menu">☰</button>
+  <a class="brand" href="#/"><img class="mark" alt=""><strong class="logo" id="bn">Dynita</strong></a>
+  <span style="flex:1"></span><div class="row" id="who"></div>
+</header>
+<aside id="side">
+  <a class="brand big" href="#/"><img class="mark" alt=""><div class="logo"><span id="bn2">Dynita</span><small>Discovery Intelligence Network Action</small></div></a>
+  <hr><nav id="nav" class="stack" style="margin:0"></nav>
+</aside>
+<main><div class="wrap" id="app"></div></main>
+<script>
+const LOGO="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='12' y1='12' x2='52' y2='52' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23FF4D8D'/%3E%3Cstop offset='1' stop-color='%23FF9A3C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%230A0610'/%3E%3Cpath d='M20 14H30A18 18 0 0 1 30 50H20Z' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M31 32L20 23M31 32L20 41M31 32L48 32' fill='none' stroke='url(%23g)' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='31' cy='32' r='4.5' fill='%23FFC48A'/%3E%3Ccircle cx='20' cy='23' r='2.5' fill='%23fff'/%3E%3Ccircle cx='20' cy='41' r='2.5' fill='%23fff'/%3E%3Ccircle cx='48' cy='32' r='3' fill='%23fff'/%3E%3C/svg%3E";
+document.querySelectorAll(".mark").forEach(i=>i.src=LOGO);
+{const l=document.createElement("link");l.rel="icon";l.href=LOGO;document.head.append(l)}
+
+/* ===== Données de départ. Comptes de démo : mot de passe  demo1234 ===== */
+const DISC=["Droit","Ingénierie","Science","Économie","Environnement","Recherche"];
+const ROLES={admin:"Administrateur",student:"Étudiant",law:"Acteur Droit",eng:"Ingénieur",prof:"Professeur"};
+const RD={admin:"Administration",student:"Recherche",law:"Droit",eng:"Ingénierie",prof:"Science"};
+const KINDS=["Commentaire","Question","Analyse juridique","Analyse technique","Référence scientifique","Recherche","Objection","Recommandation","Amélioration"];
+const KIND_BY_ROLE={law:"Analyse juridique",eng:"Analyse technique",prof:"Référence scientifique",student:"Recherche"};
+function seed(){
+ const ago=n=>new Date(Date.now()-n*864e5).toISOString();
+ return {settings:{name:"Dynita",allowSignup:true},
+ users:[
+  {id:"u1",name:"Rami Hammami",email:"admin@dynita.tn",role:"admin",spec:"Administration",active:true},
+  {id:"u2",name:"Yasmine Dridi",email:"etudiant@dynita.tn",role:"student",spec:"Informatique",active:true},
+  {id:"u3",name:"Amira Ben Salah",email:"droit@dynita.tn",role:"law",spec:"Droit de l'eau",active:true},
+  {id:"u4",name:"Karim Trabelsi",email:"ingenieur@dynita.tn",role:"eng",spec:"Génie hydraulique",active:true},
+  {id:"u5",name:"Pr. Sana Gharbi",email:"prof@dynita.tn",role:"prof",spec:"Hydrologie",active:true}],
+ problems:[{id:"p1",title:"Pénurie d'eau en Tunisie",pub:true,status:"Ouvert",by:"u1",d:ago(12),
+  desc:"La Tunisie fait face à un stress hydrique structurel : ressources limitées, demande agricole et urbaine croissante, infrastructures vieillissantes. Comment sécuriser l'accès à l'eau de façon durable ?",
+  ctx:"Le pays se situe sous le seuil de pauvreté hydrique couramment admis (500 m³ par habitant et par an) — chiffre à vérifier avec les sources officielles. Les pertes sur les réseaux de distribution et la salinisation des nappes aggravent la situation.",
+  cats:["Technique","Juridique","Scientifique","Économique","Environnementale"],discs:["Ingénierie","Droit","Science","Économie","Environnement"]}],
+ hyps:[{id:"h1",pid:"p1",by:"u4",d:ago(10),disc:"Ingénierie",title:"Moderniser les réseaux de distribution d'eau potable",
+  desc:"Réduire les pertes physiques par le remplacement des canalisations vétustes et la détection des fuites.",
+  exp:"Une part importante de l'eau produite est perdue avant d'arriver à l'usager. Cibler les tronçons les plus fuyards est plus rentable qu'augmenter la production.",
+  sol:"Sectorisation du réseau, compteurs intelligents, capteurs de pression, plan pluriannuel de remplacement des conduites.",
+  res:"Budget d'investissement, équipes de maintenance, données SIG du réseau.",skills:"Droit des marchés publics, hydrologie, étude économique.",docs:[]}],
+ comments:[
+  {id:"c1",pid:"p1",hid:"h1",by:"u3",kind:"Analyse juridique",d:ago(8),text:"Le Code des eaux (loi n°75-16 de 1975) encadre le domaine public hydraulique. Les marchés de remplacement des conduites relèvent de la réglementation des marchés publics ; à confirmer avec les textes en vigueur.",docs:[],parent:""},
+  {id:"c2",pid:"p1",hid:"h1",by:"u5",kind:"Référence scientifique",d:ago(7),text:"Il faut distinguer pertes physiques et pertes commerciales avant de chiffrer le gain. Des études d'instituts de recherche tunisiens sur le rendement des réseaux sont à rassembler.",docs:[],parent:""},
+  {id:"c3",pid:"p1",hid:"h1",by:"u2",kind:"Question",d:ago(6),text:"Existe-t-il des données ouvertes sur le taux de fuite par gouvernorat ?",docs:[],parent:""}],
+ needs:[
+  {id:"n1",pid:"p1",hid:"h1",by:"u4",title:"Analyse juridique des marchés et de la tarification",desc:"Contraintes légales du renouvellement des conduites.",disc:"Droit",status:"Ouvert",d:ago(9),resp:[]},
+  {id:"n2",pid:"p1",hid:"h1",by:"u4",title:"Validation scientifique du gain attendu",desc:"Méthode de mesure des pertes.",disc:"Science",status:"Ouvert",d:ago(9),resp:[]},
+  {id:"n3",pid:"p1",hid:"h1",by:"u4",title:"Étude économique coût/bénéfice",desc:"Retour sur investissement du plan de renouvellement.",disc:"Économie",status:"Ouvert",d:ago(9),resp:[]}],
+ tasks:[{id:"t1",pid:"p1",title:"Collecter les données de fuite par région",desc:"Rassembler les chiffres publics.",owner:"u4",parts:["u2"],skills:"Recherche documentaire",due:"",status:"doing"},
+  {id:"t2",pid:"p1",title:"Lister les textes juridiques applicables",desc:"",owner:"u3",parts:[],skills:"Droit",due:"",status:"todo"}],
+ reports:[],plans:{},notifs:[],resets:{}};
+}
+
+/* ===== Dynita — application ===== */
+const K="dynita_db2",KS="dynita_sess2";
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9),now=()=>new Date().toISOString();
+const fd=d=>new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"});
+const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+const H=async(p,e)=>{const s=e.toLowerCase()+":"+p;return globalThis.crypto&&crypto.subtle?hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s))):btoa(s)};
+let D,U,cur="home",tab="overview",msg="";
+const save=()=>localStorage.setItem(K,JSON.stringify(D));
+const by=(l,id)=>D[l].find(x=>x.id===id);
+const user=id=>by("users",id)||{name:"Utilisateur supprimé",role:"student",spec:""};
+const author=a=>a==="gemini"?{name:"Gemini AI",role:"ai",spec:"Acteur système"}:user(a);
+const rl=r=>r==="ai"?"Acteur système":ROLES[r];
+const pt=id=>by("problems",id)?.title||"—";
+const vis=()=>D.problems.filter(p=>U?(U.role==="admin"||p.status!=="Archivé"):p.pub&&p.status!=="Archivé");
+const PERM={hyp:["student","eng"],comment:["student","law","eng","prof"],need:["student","law","eng","prof"],task:["eng","admin"],report:["student","law","eng","prof"],plan:["student","law","eng","prof"]};
+const can=k=>!!U&&PERM[k].includes(U.role);
+const notify=(t,l)=>D.users.filter(u=>u.active&&u.id!==U.id).forEach(u=>D.notifs.push({id:uid(),u:u.id,t,l,d:now(),read:false}));
+const go=(h,m="")=>{msg=m;if(location.hash===h)render();else location.hash=h};
+const touch=()=>localStorage.setItem(KS,JSON.stringify({uid:U.id,exp:Date.now()+72e5}));
+const docs=a=>a.map(x=>x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.n)}</a>`:esc(x.n)).join(", ");
+const parseDocs=t=>(t||"").split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const[n,u=""]=l.split("|").map(s=>s.trim());return{n,u:/^https?:\/\//.test(u)?u:""}});
+const inp=(n,l,req=1,t="text",v="")=>`<label>${l}</label><input type="${t}" name="${n}" value="${esc(v)}" ${req?"required":""}>`;
+const ta=(n,l,req=1,v="")=>`<label>${l}</label><textarea name="${n}" ${req?"required":""}>${esc(v)}</textarea>`;
+const sel=(n,l,o,v="")=>`<label>${l}</label><select name="${n}">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a===v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
+const pidSel=pid=>pid?`<input type="hidden" name="pid" value="${pid}">`:sel("pid","Problème",vis().map(p=>[p.id,p.title]));
+const md=t=>esc(t).split("\n").map(l=>l.startsWith("## ")?`<h3>${l.slice(3)}</h3>`:l.startsWith("- ")?`<li>${l.slice(2)}</li>`:l?`<p>${l}</p>`:"").join("");
+const chip=(t,c="")=>`<span class="chip ${c}">${esc(t)}</span>`;
+const who=a=>{const x=author(a);return`<strong>${esc(x.name)}</strong> <span class="role">${esc(rl(x.role).toUpperCase())}</span>`};
+const li=(h,t,s)=>`<a class="card ci mini" href="${h}"><strong>${esc(t)}</strong><div class="mut sm">${esc(s)}</div></a>`;
+const empty=t=>`<div class="card mut">${t}</div>`;
+
+/* ---------- shell ---------- */
+function shell(){
+  document.body.classList.toggle("auth",!!U);
+  $("#bn").textContent=$("#bn2").textContent=D.settings.name;document.title=D.settings.name+" — Discovery Intelligence Network Action";
+  $("#who").innerHTML=U?`<a class="who" href="#/profile"><span class="avatar sm">${ini(U.name)}</span><span class="hid">${esc(U.name)}</span></a><span class="role hid">${ROLES[U.role].toUpperCase()}</span><button class="btn ghost" data-act="logout">Déconnexion</button>`:`<a class="btn ghost" href="#/login">Connexion</a><a class="btn" href="#/signup">Inscription</a>`;
+  const N=[["dashboard","◧","Tableau de bord"],["problems","◫","Problèmes"],["hypotheses","✦","Hypothèses"],["collab","☷","Collaboration"],["needs","⚑","Besoins & compétences"],["tasks","✓","Tâches"],["reports","✎","Rapports IA"],["plans","➜","Plans d'action"]];
+  if(U?.role==="admin")N.push(["admin","⚙","Administration"]);N.push(["profile","☺","Mon profil"]);
+  $("#nav").innerHTML=U?N.map(([r,i,l])=>`<a class="nav ${cur===r?"on":""}" href="#/${r}">${i} ${l}</a>`).join(""):"";
+}
+
+/* ---------- pages publiques & auth ---------- */
+const home=()=>`<section class="hero"><h2>Le problème est au centre, pas l'individu.</h2><p>${esc(D.settings.name)} réunit étudiants, juristes, ingénieurs et professeurs autour d'un même problème réel pour transformer les connaissances individuelles en intelligence collective et en plan d'action.</p><div class="row" style="margin-top:16px">${U?`<a class="btn" href="#/dashboard">Mon tableau de bord</a>`:`<a class="btn" href="#/signup">Créer un compte</a><a class="btn ghost" href="#/login">Connexion</a>`}<a class="btn ghost" href="#/problems">Consulter les problèmes</a></div></section>
+<div class="pipe">${["Question","Knowledge","People","Ideas","Solutions"].map(s=>`<div><i></i>${s}</div>`).join("")}</div>
+<h3>Un problème, plusieurs disciplines</h3><p class="mut">Première version : la pénurie d'eau en Tunisie — technique, juridique, scientifique, économique et environnementale.</p><br>
+<div class="grid g3">${[["Administrateur","Crée les problèmes, gère comptes, rôles et paramètres."],["Visiteur","Consulte les problèmes publics, puis s'inscrit."],["Étudiant","Propose des hypothèses, recherche, commente, participe aux tâches."],["Acteur Droit","Apporte l'analyse juridique et les références législatives."],["Ingénieur","Propose des solutions techniques et exprime ses besoins."],["Professeur","Apporte l'expertise scientifique et évalue les propositions."],["Gemini AI","Acteur système : analyse, synthétise et propose. La validation reste humaine."]].map(([t,d])=>`<div class="card"><h3>${t}</h3><p class="mut sm">${d}</p></div>`).join("")}</div>`;
+
+const login=()=>`<form class="card auth-box" data-f="login"><h2>Connexion</h2>${inp("email","Adresse e-mail",1,"email")}${inp("pwd","Mot de passe",1,"password")}<br><button class="btn">Se connecter</button><hr><p class="sm"><a href="#/forgot">Mot de passe oublié ?</a> · <a href="#/signup">Créer un compte</a></p><p class="mut sm">Démo : admin@dynita.tn, etudiant@, droit@, ingenieur@, prof@ (même domaine) — mot de passe <b>demo1234</b></p></form>`;
+const signup=()=>D.settings.allowSignup?`<form class="card auth-box" data-f="signup"><h2>Inscription</h2>${inp("name","Nom et prénom")}${inp("email","Adresse e-mail",1,"email")}${inp("pwd","Mot de passe (8 caractères min.)",1,"password")}${inp("pwd2","Confirmation du mot de passe",1,"password")}${sel("status","Statut",[["student","Étudiant"],["prof","Professeur"],["eng","Ingénieur"],["law","Acteur Droit"]])}${inp("spec","Spécialité / domaine d'expertise")}<br><button class="btn">Créer mon compte</button></form>`:empty("Les inscriptions sont fermées par l'administrateur.");
+const forgot=()=>`<div class="auth-box stack"><form class="card" data-f="forgot1"><h2>Mot de passe oublié</h2>${inp("email","Adresse e-mail",1,"email")}<br><button class="btn">Recevoir un code</button><p class="mut sm">Démo : le code s'affiche à l'écran (pas d'envoi d'e-mail dans cette version).</p></form><form class="card" data-f="forgot2">${inp("email","Adresse e-mail",1,"email")}${inp("code","Code reçu")}${inp("pwd","Nouveau mot de passe",1,"password")}<br><button class="btn">Réinitialiser</button></form></div>`;
+const profile=()=>`<h1>Mon profil</h1><br><form class="card" data-f="profile" style="max-width:560px">${inp("name","Nom et prénom",1,"text",U.name)}${inp("spec","Spécialité",1,"text",U.spec)}<label>Adresse e-mail</label><input value="${esc(U.email)}" disabled><label>Rôle</label><input value="${ROLES[U.role]}" disabled>${inp("pwd","Nouveau mot de passe (laisser vide pour ne pas changer)",0,"password")}<br><button class="btn">Enregistrer</button></form>`;
+
+/* ---------- dashboards ---------- */
+const activity=()=>[...D.hyps.map(h=>({d:h.d,t:`${user(h.by).name} a proposé « ${h.title} »`,l:"#/problem/"+h.pid})),...D.comments.map(c=>({d:c.d,t:`${author(c.by).name} — ${c.kind}`,l:"#/problem/"+c.pid})),...D.needs.map(n=>({d:n.d,t:`Besoin exprimé : ${n.title}`,l:"#/needs"})),...D.reports.map(r=>({d:r.d,t:"Compte rendu IA généré",l:"#/reports"}))].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,6);
+function focus(){
+  const open=D.needs.filter(n=>n.status==="Ouvert");
+  const F={admin:["Supervision des comptes",D.users.map(u=>li("#/admin",u.name,`${ROLES[u.role]} · ${u.active?"actif":"désactivé"}`))],
+   student:["Besoins à explorer",open.slice(0,4).map(n=>li("#/needs",n.title,n.disc))],
+   law:["Besoins juridiques ouverts",open.filter(n=>n.disc==="Droit").map(n=>li("#/needs",n.title,pt(n.pid)))],
+   eng:["Mes hypothèses",D.hyps.filter(h=>h.by===U.id).map(h=>li("#/problem/"+h.pid,h.title,"Besoins ouverts : "+open.filter(n=>n.hid===h.id).length))],
+   prof:["Hypothèses à évaluer",D.hyps.filter(h=>!D.comments.some(c=>c.hid===h.id&&c.by===U.id)).map(h=>li("#/problem/"+h.pid,h.title,user(h.by).name))]}[U.role];
+  return`<div class="card stack"><h3>${F[0]}</h3>${F[1].join("")||'<p class="mut">Rien pour le moment.</p>'}</div>`;
+}
+function dashboard(){
+  const my=D.tasks.filter(t=>(t.owner===U.id||t.parts.includes(U.id))&&t.status!=="done");
+  const nt=D.notifs.filter(n=>n.u===U.id&&!n.read).slice(-5).reverse();
+  const st=(n,l)=>`<div class="card"><div class="stat">${n}</div><div class="mut sm">${l}</div></div>`;
+  return`<h1>Tableau de bord</h1><p class="mut">${esc(U.name)} · ${ROLES[U.role]}</p><br>
+  <div class="grid g4">${st(vis().length,"Problèmes")}${st(D.hyps.length,"Hypothèses")}${st(D.hyps.filter(h=>h.by===U.id).length+D.comments.filter(c=>c.by===U.id).length,"Mes contributions")}${st(my.length,"Mes tâches ouvertes")}</div><br>
+  <div class="grid g2">${focus()}<div class="stack">
+   <div class="card"><div class="row between"><h3>Notifications</h3>${nt.length?'<button class="btn ghost" data-act="read">Tout lire</button>':""}</div>${nt.map(n=>`<hr><a class="sm" href="${n.l}">${esc(n.t)}</a>`).join("")||'<p class="mut sm">Aucune nouvelle notification.</p>'}</div>
+   <div class="card"><h3>Mes tâches</h3>${my.map(t=>`<hr><div class="sm"><a href="#/tasks">${esc(t.title)}</a> ${chip(t.status==="doing"?"en cours":"à faire")}</div>`).join("")||'<p class="mut sm">Aucune tâche assignée.</p>'}</div>
+   <div class="card"><h3>Activité récente</h3>${activity().map(a=>`<hr><a class="sm" href="${a.l}">${esc(a.t)} <span class="mut">${fd(a.d)}</span></a>`).join("")}</div>
+   <div class="card"><h3>Rapports disponibles</h3>${D.reports.slice(-3).reverse().map(r=>`<hr><a class="sm" href="#/reports">${esc(pt(r.pid))} — ${fd(r.d)}</a>`).join("")||'<p class="mut sm">Aucun rapport.</p>'}</div>
+  </div></div>`;
+}
+
+/* ---------- problèmes ---------- */
+const problems=()=>`<div class="row between"><div><h1>Problèmes</h1><p class="mut">${U?"Choisissez un problème pour rejoindre son espace de travail.":"Problèmes publics — connectez-vous pour participer."}</p></div>${U?.role==="admin"?'<a class="btn" href="#/admin">＋ Nouveau problème</a>':""}</div><br><div class="grid g2">${vis().map(p=>`<a class="card ci" href="#/problem/${p.id}"><div class="row between"><span class="mono">${p.id.toUpperCase()}</span>${chip(p.status,p.status==="Ouvert"?"tag-ok":"tag-n")}</div><h3 style="margin:8px 0">${esc(p.title)}</h3><p class="mut sm">${esc(p.desc.slice(0,140))}…</p><div class="row" style="margin-top:10px">${p.cats.map(c=>chip(c)).join("")}</div><div class="mut sm" style="margin-top:10px">${D.hyps.filter(h=>h.pid===p.id).length} hypothèses · ${D.comments.filter(c=>c.pid===p.id).length} contributions</div></a>`).join("")||empty("Aucun problème disponible.")}</div>`;
+function problemPage(id){
+  const p=by("problems",id);if(!p||(!U&&!p.pub))return`<h1>Problème introuvable</h1><a class="btn" href="#/problems">Retour</a>`;
+  const T=U?[["overview","Vue d'ensemble"],["hyp","Hypothèses"],["collab","Collaboration"],["needs","Besoins"],["tasks","Tâches"],["report","Rapport IA"],["plan","Plan d'action"]]:[["overview","Vue d'ensemble"],["hyp","Hypothèses"]];
+  if(!T.some(t=>t[0]===tab))tab="overview";
+  const B={overview:()=>`<div class="card stack"><p>${esc(p.desc)}</p><div><b>Contexte</b><p class="mut">${esc(p.ctx)}</p></div><div class="row"><b>Catégories</b> ${p.cats.map(c=>chip(c)).join("")}</div><div class="row"><b>Disciplines</b> ${p.discs.map(c=>chip(c,"tag-vi")).join("")}</div></div>`,hyp:()=>hypView(id),collab:()=>collab(id),needs:()=>needsView(id),tasks:()=>tasksView(id),report:()=>reportsView(id),plan:()=>planView(id)}[tab]();
+  return`<a class="mut sm" href="#/problems">← Problèmes</a><div class="row between" style="margin-top:8px"><div><span class="mono">${p.id.toUpperCase()}</span><h1>${esc(p.title)}</h1></div>${chip(p.status,p.status==="Ouvert"?"tag-ok":"tag-n")}</div>
+  <div class="tabs">${T.map(([k,l])=>`<button class="tab ${k===tab?"on":""}" data-act="tab" data-v="${k}">${l}</button>`).join("")}</div>${B}`;
+}
+
+/* ---------- hypothèses ---------- */
+const hypCard=h=>`<div class="card"><div class="row between"><h3>${esc(h.title)}</h3>${chip(h.disc,"tag-vi")}</div><div class="mut sm">${esc(user(h.by).name)} · ${fd(h.d)}${U?` · <a href="#/problem/${h.pid}">${esc(pt(h.pid))}</a>`:""}</div>${U?`<p style="margin-top:8px">${esc(h.desc)}</p><details><summary>Explication, solution, ressources</summary><p><b>Explication :</b> ${esc(h.exp)}</p><p><b>Solution :</b> ${esc(h.sol)}</p><p><b>Ressources :</b> ${esc(h.res)}</p><p><b>Compétences recherchées :</b> ${esc(h.skills)}</p>${h.docs.length?`<p><b>Documents :</b> ${docs(h.docs)}</p>`:""}</details>`:""}</div>`;
+const hypView=pid=>`${can("hyp")?`<form class="card" data-f="hyp"><h3>Proposer une hypothèse</h3>${pidSel(pid)}${inp("title","Titre")}${ta("desc","Description")}${ta("exp","Explication")}${sel("disc","Discipline concernée",DISC,RD[U.role])}${ta("sol","Solution envisagée")}${inp("res","Ressources nécessaires")}${inp("skills","Compétences recherchées")}${ta("docs","Documents et références (un par ligne : nom | https://lien)",0)}<br><button class="btn">Publier l'hypothèse</button></form><br>`:""}<div class="stack">${D.hyps.filter(h=>!pid||h.pid===pid).map(hypCard).join("")||empty("Aucune hypothèse pour le moment.")}</div>`;
+
+/* ---------- collaboration ---------- */
+function pickView(route,a,fn){
+  const l=vis(),pid=a&&by("problems",a)?a:l[0]?.id;if(!pid)return empty("Aucun problème.");
+  return`<div class="row between"><h1>${route==="collab"?"Espace de collaboration":"Plan d'action"}</h1><select style="width:auto;max-width:100%" data-chg="goto" data-r="${route}">${l.map(p=>`<option value="${p.id}" ${p.id===pid?"selected":""}>${esc(p.title)}</option>`).join("")}</select></div><br>${fn(pid)}`;
+}
+const cm=c=>`<div class="card cm"><div class="row between"><div>${who(c.by)} ${chip(author(c.by).spec||"")}</div><span class="mut sm">${fd(c.d)}</span></div><div class="row" style="margin:6px 0">${chip(c.kind,"tag-vi")}${c.hid?chip("↳ "+(by("hyps",c.hid)?.title||""),""):""}</div><p>${esc(c.text)}</p>${c.docs.length?`<p class="sm">📎 ${docs(c.docs)}</p>`:""}${D.comments.filter(r=>r.parent===c.id).map(r=>`<div class="rep"><div>${who(r.by)} <span class="mut sm">${fd(r.d)}</span></div><p>${esc(r.text)}</p></div>`).join("")}${can("comment")?`<form class="row rep" data-f="reply"><input type="hidden" name="parent" value="${c.id}"><input name="text" placeholder="Répondre…" required style="flex:1"><button class="btn ghost">Répondre</button></form>`:""}</div>`;
+const collab=pid=>`${can("comment")?`<form class="card" data-f="comment"><h3>Contribuer</h3><input type="hidden" name="pid" value="${pid}">${sel("hid","Hypothèse concernée",[["","Problème en général"],...D.hyps.filter(h=>h.pid===pid).map(h=>[h.id,h.title])])}${sel("kind","Type de contribution",KINDS,KIND_BY_ROLE[U.role]||"Commentaire")}${ta("text","Votre contribution")}${ta("docs","Documents partagés (un par ligne : nom | https://lien)",0)}<br><button class="btn">Publier</button></form><br>`:""}${D.comments.filter(c=>c.pid===pid&&!c.parent).sort((a,b)=>a.d.localeCompare(b.d)).map(cm).join("")||empty("Aucune contribution.")}`;
+
+/* ---------- besoins & compétences ---------- */
+const needCard=n=>{const match=n.disc===RD[U.role]&&n.status==="Ouvert";return`<div class="card"><div class="row between"><h3>${esc(n.title)}</h3><div class="row">${chip(n.disc,"tag-vi")}${chip(n.status,n.status==="Ouvert"?"tag-wa":"tag-ok")}</div></div><div class="mut sm">${esc(user(n.by).name)} · <a href="#/problem/${n.pid}">${esc(pt(n.pid))}</a>${match?" · "+chip("Correspond à votre profil","tag-ok"):""}</div><p style="margin-top:8px">${esc(n.desc)}</p>${n.resp.map(r=>`<hr><div class="sm">${who(r.by)} — ${esc(r.text)}</div>`).join("")}${can("comment")&&n.status==="Ouvert"?`<form class="row" data-f="resp" style="margin-top:10px"><input type="hidden" name="id" value="${n.id}"><input name="text" placeholder="Apporter ma contribution…" required style="flex:1"><button class="btn ghost">Contribuer</button></form>`:""}${n.by===U.id&&n.status==="Ouvert"?`<button class="btn ghost" style="margin-top:10px" data-act="sat" data-id="${n.id}">Marquer comme satisfait</button>`:""}</div>`};
+const needsView=pid=>`${can("need")?`<form class="card" data-f="need"><h3>Exprimer un besoin</h3>${pidSel(pid)}${inp("title","Besoin (ex. analyse juridique, étude économique)")}${ta("desc","Détails")}${sel("disc","Compétence recherchée",DISC)}<br><button class="btn">Publier le besoin</button></form><br>`:""}<div class="stack">${D.needs.filter(n=>!pid||n.pid===pid).sort((a,b)=>(b.disc===RD[U.role])-(a.disc===RD[U.role])).map(needCard).join("")||empty("Aucun besoin exprimé.")}</div>`;
+
+/* ---------- tâches ---------- */
+const COLS=[["todo","À faire"],["doing","En cours"],["done","Terminée"]];
+const taskCard=t=>{const mine=t.owner===U.id||t.parts.includes(U.id)||U.role==="admin"||U.role==="eng",i=COLS.findIndex(c=>c[0]===t.status);return`<div class="card"><strong>${esc(t.title)}</strong><div class="mut sm">${esc(pt(t.pid))}</div>${t.desc?`<p class="sm">${esc(t.desc)}</p>`:""}<div class="sm">Responsable : ${esc(user(t.owner).name)}${t.parts.length?` · Participants : ${t.parts.map(p=>esc(user(p).name)).join(", ")}`:""}</div>${t.skills?`<div class="sm mut">Compétences : ${esc(t.skills)}</div>`:""}${t.due?`<div class="sm">Échéance : ${fd(t.due)}</div>`:""}<div class="row" style="margin-top:8px">${mine&&i>0?`<button class="btn ghost" data-act="mv" data-id="${t.id}" data-d="-1">◀</button>`:""}${mine&&i<2?`<button class="btn ghost" data-act="mv" data-id="${t.id}" data-d="1">▶</button>`:""}${U.role!=="admin"&&!t.parts.includes(U.id)&&t.owner!==U.id?`<button class="btn ghost" data-act="join" data-id="${t.id}">Participer</button>`:""}</div></div>`};
+const tasksView=pid=>{const L=D.tasks.filter(t=>!pid||t.pid===pid);return`${can("task")?`<form class="card" data-f="task"><h3>Nouvelle tâche</h3>${pidSel(pid)}${inp("title","Titre")}${ta("desc","Description",0)}<div class="grid g2"><div>${sel("owner","Responsable",D.users.filter(u=>u.active).map(u=>[u.id,u.name]),U.id)}</div><div><label>Participants</label><select name="parts" multiple>${D.users.filter(u=>u.active).map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join("")}</select></div></div>${inp("skills","Compétences nécessaires",0)}${inp("due","Date limite (facultative)",0,"date")}<br><button class="btn">Créer la tâche</button></form><br>`:""}<div class="kan">${COLS.map(([k,l])=>`<div><strong>${l} (${L.filter(t=>t.status===k).length})</strong>${L.filter(t=>t.status===k).map(taskCard).join("")}</div>`).join("")}</div>`};
+
+/* ---------- rapports IA ---------- */
+const packData=pid=>({problem:by("problems",pid),hypotheses:D.hyps.filter(h=>h.pid===pid),needs:D.needs.filter(n=>n.pid===pid),tasks:D.tasks.filter(t=>t.pid===pid).map(t=>({...t,owner:user(t.owner).name})),contributions:D.comments.filter(c=>c.pid===pid).map(c=>({id:c.id,hypothesis:c.hid,author:author(c.by).name,role:rl(author(c.by).role),discipline:RD[author(c.by).role]||"",type:c.kind,text:c.text,replyTo:c.parent}))});
+function localReport(pid){
+  const p=by("problems",pid),H=D.hyps.filter(h=>h.pid===pid),C=D.comments.filter(c=>c.pid===pid),N=D.needs.filter(n=>n.pid===pid),f=(a,e="Aucun élément.")=>a.length?a.join("\n"):"- "+e;
+  const byRole=r=>C.filter(c=>author(c.by).role===r).map(c=>`- ${author(c.by).name} (${c.kind}) : ${c.text}`);
+  const disc={};C.forEach(c=>{const d=RD[author(c.by).role]||"Autre";disc[d]=(disc[d]||0)+1});
+  const conv=H.filter(h=>new Set(C.filter(c=>c.hid===h.id).map(c=>author(c.by).role)).size>=2).map(h=>`- « ${h.title} » reçoit des contributions de plusieurs disciplines : ${[...new Set(C.filter(c=>c.hid===h.id).map(c=>RD[author(c.by).role]))].join(", ")}.`);
+  const q=C.filter(c=>c.kind==="Question"&&!C.some(r=>r.parent===c.id));
+  return`## 1. Résumé du problème\n${p.desc}\n## 2. Hypothèses proposées\n${f(H.map(h=>`- ${h.title} — ${user(h.by).name} (${h.disc})`))}\n## 3. Contributions par discipline\n${f(Object.entries(disc).map(([d,n])=>`- ${d} : ${n} contribution(s)`))}\n## 4. Analyses techniques, juridiques et scientifiques\nTechniques :\n${f(byRole("eng"))}\nJuridiques :\n${f(byRole("law"))}\nScientifiques :\n${f(byRole("prof"))}\n## 5. Points de convergence\n${f(conv,"Pas encore de convergence identifiable.")}\n## 6. Contradictions\n${f(C.filter(c=>c.kind==="Objection").map(c=>`- ${author(c.by).name} : ${c.text}`),"Aucune contradiction explicite dans les contributions.")}\n## 7. Solutions envisagées\n${f(H.map(h=>`- ${h.sol}`))}\n## 8. Besoins identifiés\n${f(N.map(n=>`- [${n.status}] ${n.title} (${n.disc})`))}\n## 9. Questions non résolues\n${f(q.map(c=>`- ${c.text} (${author(c.by).name})`),"Aucune question en attente.")}\n## 10. Recommandations\n${f([...C.filter(c=>c.kind==="Recommandation").map(c=>`- ${c.text}`),...N.filter(n=>n.status==="Ouvert").map(n=>`- Combler le besoin ouvert : ${n.title} (${n.disc}).`)],"Aucune recommandation.")}\n\nRapport établi uniquement à partir des contributions enregistrées. La validation finale reste humaine.`;
+}
+async function genReport(pid){
+  let text,source="Synthèse locale";
+  try{const r=await fetch("/api/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(packData(pid))});if(r.ok){const j=await r.json();if(j.text){text=j.text;source="Gemini"}}}catch(e){}
+  text=text||localReport(pid);
+  D.reports.push({id:uid(),pid,d:now(),by:U.id,source,text,n:D.comments.filter(c=>c.pid===pid).length+D.hyps.filter(h=>h.pid===pid).length,req:[]});
+  notify(`Nouveau compte rendu : ${pt(pid)}`,"#/reports");save();render();
+}
+const reportsView=pid=>`${can("report")?`<div class="card"><div class="row between"><div><h3>Générer un compte rendu</h3><p class="mut sm">Gemini analyse les contributions (si le serveur et la clé API sont configurés), sinon une synthèse locale est produite.</p></div><form class="row" data-f="gen">${pidSel(pid)}<button class="btn ai">✦ Générer</button></form></div></div><br>`:""}<div class="stack">${D.reports.filter(r=>!pid||r.pid===pid).slice().reverse().map(r=>`<div class="card"><div class="row between"><h3>${esc(pt(r.pid))}</h3><span class="mut sm">${fd(r.d)} · ${esc(r.source)} · demandé par ${esc(user(r.by).name)}</span></div><p class="mut sm">Traçabilité : ${r.n} contributions analysées.</p><div class="ai-box rep-txt" style="white-space:normal">${md(r.text)}</div>${r.req.map(q=>`<hr><div class="sm">${who(q.by)} demande une amélioration : ${esc(q.text)}</div>`).join("")}${can("report")?`<form class="row" data-f="rreq" style="margin-top:12px"><input type="hidden" name="id" value="${r.id}"><input name="text" placeholder="Demander une amélioration…" required style="flex:1"><button class="btn ghost">Envoyer</button></form>`:""}</div>`).join("")||empty("Aucun compte rendu pour le moment.")}</div>`;
+
+/* ---------- plan d'action ---------- */
+const FIELDS=[["sol","Solution à mettre en œuvre"],["step","Étape de réalisation"],["tasks","Tâches nécessaires"],["owner","Acteurs responsables"],["res","Ressources"],["delay","Délai envisagé"],["result","Résultat attendu"],["kpi","Indicateur de suivi"]];
+function planView(pid){
+  const P=D.plans[pid]||{steps:[],valid:[]},ed=can("plan");
+  return`<div class="row" style="margin-bottom:16px">${ed?`<button class="btn ai" data-act="suggest" data-pid="${pid}">✦ Proposer à partir des hypothèses</button><button class="btn ghost" data-act="addstep" data-pid="${pid}">＋ Ajouter une étape</button>`:""}</div>
+  <div class="stack">${P.steps.map((s,i)=>`<div class="card"><div class="row between"><strong>Étape ${i+1}</strong>${ed?`<button class="btn danger" data-act="delstep" data-pid="${pid}" data-i="${i}">Supprimer</button>`:""}</div><div class="grid g2">${FIELDS.map(([k,l])=>`<div><label>${l}</label><input data-chg="ps" data-pid="${pid}" data-i="${i}" data-k="${k}" value="${esc(s[k])}" ${ed?"":"disabled"}></div>`).join("")}</div></div>`).join("")||empty("Aucune étape. Proposez un plan à partir des hypothèses ou ajoutez une étape.")}</div><br>
+  <div class="card"><h3>Validation par les participants</h3><p class="sm mut">Toute modification retire les validations déjà données.</p><div class="row" style="margin:8px 0">${P.valid.map(v=>chip("✓ "+user(v).name,"tag-ok")).join("")||'<span class="mut sm">Pas encore validé.</span>'}</div>${ed&&P.steps.length&&!P.valid.includes(U.id)?`<button class="btn" data-act="val" data-pid="${pid}">Valider le plan</button>`:""}</div>`;
+}
+const plan=pid=>D.plans[pid]??(D.plans[pid]={steps:[],valid:[]});
+const blank=()=>({sol:"",step:"",tasks:"",owner:"",res:"",delay:"",result:"",kpi:""});
+
+/* ---------- administration ---------- */
+const admin=()=>`<h1>Administration</h1><br><div class="stack">
+<div class="card"><h3>Utilisateurs</h3><table><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Statut</th></tr>${D.users.map(u=>`<tr><td>${esc(u.name)}<div class="mut sm">${esc(u.spec)}</div></td><td>${esc(u.email)}</td><td><select class="inline" data-chg="role" data-id="${u.id}" ${u.id===U.id?"disabled":""}>${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${k===u.role?"selected":""}>${v}</option>`).join("")}</select></td><td>${u.id===U.id?chip("vous"):`<button class="btn ghost" data-act="toggle" data-id="${u.id}">${u.active?"Désactiver":"Réactiver"}</button>`}</td></tr>`).join("")}</table></div>
+<form class="card" data-f="newuser"><h3>Créer un compte</h3><div class="grid g2"><div>${inp("name","Nom et prénom")}${inp("email","E-mail",1,"email")}</div><div>${inp("pwd","Mot de passe provisoire",1,"password")}${sel("role","Rôle",Object.entries(ROLES))}</div></div>${inp("spec","Spécialité",0)}<br><button class="btn">Créer</button></form>
+<form class="card" data-f="newprob"><h3>Publier un problème</h3>${inp("title","Titre")}${ta("desc","Description")}${ta("ctx","Contexte")}${inp("cats","Catégories (séparées par des virgules)",1,"text","Technique, Juridique, Scientifique, Économique, Environnementale")}${inp("discs","Disciplines concernées (virgules)",1,"text","Ingénierie, Droit, Science, Économie")}<label class="row" style="margin-top:12px"><input type="checkbox" name="pub" checked style="width:auto"> Visible par les visiteurs</label><br><button class="btn">Publier</button></form>
+<div class="card"><h3>Problèmes</h3>${D.problems.map(p=>`<hr><div class="row between"><span>${esc(p.title)} ${chip(p.status)}</span><span class="row"><button class="btn ghost" data-act="arch" data-id="${p.id}">${p.status==="Archivé"?"Rouvrir":"Archiver"}</button><button class="btn danger" data-act="delprob" data-id="${p.id}">Supprimer</button></span></div>`).join("")}</div>
+<form class="card" data-f="settings"><h3>Paramètres de la plateforme</h3>${inp("name","Nom du site",1,"text",D.settings.name)}<label class="row" style="margin-top:12px"><input type="checkbox" name="allow" ${D.settings.allowSignup?"checked":""} style="width:auto"> Autoriser les inscriptions</label><br><button class="btn">Enregistrer</button><p class="mut sm">L'administrateur gère la plateforme mais ne décide pas de la validité scientifique des solutions.</p></form></div>`;
+
+/* ---------- routeur ---------- */
+const PUB=["","home","login","signup","forgot","problems","problem"];
+function render(){
+  const [r="",a]=location.hash.replace("#/","").split("/");
+  if(!U&&!PUB.includes(r))return go("#/login");
+  if(r==="admin"&&U?.role!=="admin")return go("#/dashboard");
+  if(U&&["login","signup","forgot"].includes(r))return go("#/dashboard");
+  cur=r||"home";if(r==="problem"){cur="problems"}
+  const V={home,login,signup,forgot,dashboard,problems,problem:()=>problemPage(a),hypotheses:()=>`<h1>Hypothèses</h1><br>${hypView()}`,collab:()=>pickView("collab",a,collab),needs:()=>`<h1>Besoins & compétences</h1><br>${needsView()}`,tasks:()=>`<h1>Tâches</h1><br>${tasksView()}`,reports:()=>`<h1>Rapports IA</h1><br>${reportsView()}`,plans:()=>pickView("plans",a,planView),admin,profile};
+  shell();
+  $("#app").innerHTML=(msg?`<div class="flash">${msg}</div>`:"")+(V[cur==="problems"&&r==="problem"?"problem":cur]||home)();msg="";
+  document.body.classList.remove("open");$("#side").classList.remove("open");
+}
+
+/* ---------- actions ---------- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act,d=b.dataset;
+  if(a==="tab"){tab=d.v}
+  if(a==="logout"){localStorage.removeItem(KS);U=null;return go("#/","Vous êtes déconnecté.")}
+  if(a==="read"){D.notifs.filter(n=>n.u===U.id).forEach(n=>n.read=true)}
+  if(a==="sat"){by("needs",d.id).status="Satisfait"}
+  if(a==="join"){by("tasks",d.id).parts.push(U.id)}
+  if(a==="mv"){const t=by("tasks",d.id);t.status=COLS[COLS.findIndex(c=>c[0]===t.status)+ +d.d][0]}
+  if(a==="gen"){return genReport(d.pid)}
+  if(a==="addstep"){plan(d.pid).steps.push(blank());plan(d.pid).valid=[]}
+  if(a==="delstep"){plan(d.pid).steps.splice(+d.i,1);plan(d.pid).valid=[]}
+  if(a==="val"){plan(d.pid).valid.push(U.id)}
+  if(a==="suggest"){const P=plan(d.pid);D.hyps.filter(h=>h.pid===d.pid).forEach(h=>P.steps.push({sol:h.title,step:"Approfondir et valider l'hypothèse",tasks:D.needs.filter(n=>n.hid===h.id&&n.status==="Ouvert").map(n=>n.title).join("; "),owner:user(h.by).name,res:h.res,delay:"",result:"",kpi:""}));P.valid=[]}
+  if(a==="toggle"){const u=by("users",d.id);u.active=!u.active}
+  if(a==="arch"){const p=by("problems",d.id);p.status=p.status==="Archivé"?"Ouvert":"Archivé"}
+  if(a==="delprob"){if(!confirm("Supprimer ce problème et son contenu ?"))return;const i=d.id;D.problems=D.problems.filter(p=>p.id!==i);["hyps","comments","needs","tasks","reports"].forEach(k=>D[k]=D[k].filter(x=>x.pid!==i));delete D.plans[i]}
+  save();render();
+});
+document.addEventListener("change",async e=>{
+  const t=e.target,c=t.dataset.chg;if(!c)return;
+  if(c==="goto")return go(`#/${t.dataset.r}/${t.value}`);
+  if(c==="role"){by("users",t.dataset.id).role=t.value}
+  if(c==="ps"){const P=plan(t.dataset.pid);P.steps[+t.dataset.i][t.dataset.k]=t.value;P.valid=[]}
+  save();if(c!=="ps")render();
+});
+document.addEventListener("submit",async e=>{
+  e.preventDefault();const f=e.target,k=f.dataset.f,F=new FormData(f),d=Object.fromEntries(F);if(!k)return;
+  const em=(d.email||"").trim().toLowerCase();
+  if(k==="login"){const u=D.users.find(x=>x.email===em);if(!u||u.pwd!==await H(d.pwd,em))return go(location.hash,"Identifiants incorrects.");if(!u.active)return go(location.hash,"Compte désactivé. Contactez l'administrateur.");U=u;touch();return go("#/dashboard")}
+  if(k==="signup"){if(D.users.some(x=>x.email===em))return go(location.hash,"Cette adresse est déjà utilisée.");if(d.pwd.length<8||d.pwd!==d.pwd2)return go(location.hash,"Mot de passe : 8 caractères minimum et deux saisies identiques.");const u={id:uid(),name:d.name,email:em,pwd:await H(d.pwd,em),role:d.status,spec:d.spec,active:true};D.users.push(u);save();U=u;touch();return go("#/dashboard","Bienvenue ! Votre rôle : "+ROLES[u.role]+" (modifiable par l'administrateur).")}
+  if(k==="forgot1"){const u=D.users.find(x=>x.email===em);if(u){const c=String(Math.floor(1e5+Math.random()*9e5));D.resets[em]={c,exp:Date.now()+9e5};save();return go(location.hash,`Code de réinitialisation (démo) : <b>${c}</b>`)}return go(location.hash,"Si ce compte existe, un code a été envoyé.")}
+  if(k==="forgot2"){const r=D.resets[em],u=D.users.find(x=>x.email===em);if(!r||!u||r.c!==d.code.trim()||r.exp<Date.now()||d.pwd.length<8)return go(location.hash,"Code invalide ou expiré.");u.pwd=await H(d.pwd,em);delete D.resets[em];save();return go("#/login","Mot de passe modifié.")}
+  if(!U)return;
+  if(k==="profile"){U.name=d.name;U.spec=d.spec;if(d.pwd){if(d.pwd.length<8)return go(location.hash,"8 caractères minimum.");U.pwd=await H(d.pwd,U.email)}save();return go(location.hash,"Profil enregistré.")}
+  if(k==="hyp"&&can("hyp")){D.hyps.push({id:uid(),pid:d.pid,by:U.id,d:now(),title:d.title,desc:d.desc,exp:d.exp,disc:d.disc,sol:d.sol,res:d.res,skills:d.skills,docs:parseDocs(d.docs)});notify(`Nouvelle hypothèse : ${d.title}`,"#/problem/"+d.pid)}
+  if(k==="comment"&&can("comment")){D.comments.push({id:uid(),pid:d.pid,hid:d.hid,by:U.id,kind:d.kind,text:d.text,docs:parseDocs(d.docs),parent:"",d:now()});notify(`${U.name} : ${d.kind}`,"#/problem/"+d.pid)}
+  if(k==="reply"&&can("comment")){const p=by("comments",d.parent);D.comments.push({id:uid(),pid:p.pid,hid:p.hid,by:U.id,kind:"Commentaire",text:d.text,docs:[],parent:p.id,d:now()});D.notifs.push({id:uid(),u:p.by,t:`${U.name} a répondu à votre contribution`,l:"#/problem/"+p.pid,d:now(),read:false})}
+  if(k==="need"&&can("need")){D.needs.push({id:uid(),pid:d.pid,hid:"",by:U.id,title:d.title,desc:d.desc,disc:d.disc,status:"Ouvert",d:now(),resp:[]});notify(`Nouveau besoin (${d.disc}) : ${d.title}`,"#/needs")}
+  if(k==="resp"&&can("comment")){by("needs",d.id).resp.push({by:U.id,text:d.text})}
+  if(k==="task"&&can("task")){D.tasks.push({id:uid(),pid:d.pid,title:d.title,desc:d.desc,owner:d.owner,parts:F.getAll("parts"),skills:d.skills,due:d.due,status:"todo"});D.notifs.push({id:uid(),u:d.owner,t:`Tâche assignée : ${d.title}`,l:"#/tasks",d:now(),read:false})}
+  if(k==="gen"&&can("report"))return genReport(d.pid);
+  if(k==="rreq"&&can("report")){by("reports",d.id).req.push({by:U.id,text:d.text})}
+  if(U.role==="admin"){
+    if(k==="newuser"){if(D.users.some(x=>x.email===em))return go(location.hash,"Adresse déjà utilisée.");D.users.push({id:uid(),name:d.name,email:em,pwd:await H(d.pwd,em),role:d.role,spec:d.spec||"",active:true})}
+    if(k==="newprob"){const L=s=>s.split(",").map(x=>x.trim()).filter(Boolean);D.problems.push({id:"p"+uid(),title:d.title,desc:d.desc,ctx:d.ctx,cats:L(d.cats),discs:L(d.discs),pub:!!d.pub,status:"Ouvert",by:U.id,d:now()});notify(`Nouveau problème publié : ${d.title}`,"#/problems")}
+    if(k==="settings"){D.settings.name=d.name;D.settings.allowSignup=!!d.allow}
+  }
+  save();f.reset();render();
+});
+$("#burger").onclick=()=>$("#side").classList.toggle("open");
+window.addEventListener("hashchange",()=>{tab="overview";render();scrollTo(0,0)});
+(async()=>{D=JSON.parse(localStorage.getItem(K)||"null");if(!D){D=seed();for(const u of D.users)u.pwd=await H("demo1234",u.email)}
+  save();
+  const s=JSON.parse(localStorage.getItem(KS)||"null");U=s&&s.exp>Date.now()?by("users",s.uid)||null:null;if(U&&!U.active)U=null;if(U)touch();render()})();
+</script>
+</body>
+</html>
